@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"io/ioutil"
+	"time"
 
 	"github.com/mwitkow/grpc-proxy/proxy"
 	"github.com/sirupsen/logrus"
@@ -87,7 +89,10 @@ func dialBackendOrFail() *grpc.ClientConn {
 		grpc.WithBackoffMaxDelay(*flagBackendBackoffMaxDelay),
 	)
 
-	cc, err := grpc.Dial(*flagBackendHostPort, opt...)
+	ctx := context.Background()
+	opt = append(opt, grpc.WithBlock())
+	ctx, _ = context.WithTimeout(ctx, 3*time.Second)
+	cc, err := grpc.DialContext(ctx, *flagBackendHostPort, opt...)
 	if err != nil {
 		logrus.Fatalf("failed dialing backend: %v", err)
 	}
