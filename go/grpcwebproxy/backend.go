@@ -91,7 +91,7 @@ func dialBackendOrFail() *grpc.ClientConn {
 
 	ctx := context.Background()
 	opt = append(opt, grpc.WithBlock())
-	ctx, _ = context.WithTimeout(ctx, 3*time.Second)
+	ctx, _ = context.WithTimeout(ctx, 100*time.Millisecond)
 	cc, err := grpc.DialContext(ctx, *flagBackendHostPort, opt...)
 	if err != nil {
 		logrus.Fatalf("failed dialing backend: %v", err)
